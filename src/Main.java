@@ -3,6 +3,9 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
+    public static String[] arabicNumbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+    public static String[] romeNumbers = {"I", "V", "X", "L", "C", "D", "M"};
+
     public static void main(String[] args) {
         // Создаём сканер и вводим данные
         Scanner scanner = new Scanner(System.in);
@@ -31,10 +34,19 @@ public class Main {
             operator = expression[1];
         }
 
-//        Expression expression = new Expression(input);
-        for (String val: expression) {
-            System.out.println(val);
+        if (isDiffSystem(numbers)) {
+            return "throws Exception //т.к. используются одновременно разные системы счисления";
         }
+
         return " ";
+    }
+
+    public static boolean isDiffSystem(String[] numbers) {
+        return (isArabic(numbers[0]) & !(isArabic(numbers[1]))) |
+                (isArabic(numbers[1]) & !(isArabic(numbers[0])));
+    }
+
+    public static boolean isArabic(String a) {
+        return Arrays.asList(arabicNumbers).contains(a);
     }
 }
