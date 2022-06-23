@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -31,10 +32,10 @@ public class Main {
 
         // Проверка на валидность математической операции
         if (expression.length < 3 | expression.length % 2 == 0) {
-            return noMathExpr;
+            return exception(noMathExpr);
         // Проверка на формат математической операции
         } else if (expression.length > 3) {
-            return invalidExpr;
+            return exception(invalidExpr);
         // В случае успешных проверок выделяем числа и оператор в отдельные переменные
         } else {
             numbers = new String[] {expression[0], expression[2]};
@@ -54,7 +55,7 @@ public class Main {
                     continue;
                 }
                 if (sysType != 0) {
-                    return diffSystems;
+                    return exception(diffSystems);
                 }
             } else if (isRome(num)) {
                 if (count == 0) {
@@ -63,10 +64,10 @@ public class Main {
                     continue;
                 }
                 if (sysType != 1) {
-                    return diffSystems;
+                    return exception(diffSystems);
                 }
             } else {
-                return invalidSys;
+                return exception(invalidSys);
             }
         }
 
@@ -89,7 +90,7 @@ public class Main {
             case "-":
                 String out = getOutput(sysType, num1 - num2);
                 if (out == "null") {
-                    return negRomeVal;
+                    return exception(negRomeVal);
                 }
                 return out;
             case "*":
@@ -97,7 +98,7 @@ public class Main {
             case "/":
                 return getOutput(sysType, num1 / num2);
             default:
-                return noOperation;
+                return exception(noOperation);
         }
     }
 
@@ -127,6 +128,14 @@ public class Main {
             return intToStr(out);
         } else {
             return String.valueOf(RomeNumber.getRomeNumber(intToStr(out)));
+        }
+    }
+    
+    public static String exception(String msg) {
+        try {
+            throw new IOException();
+        } catch (IOException e) {
+            return msg;
         }
     }
 }
