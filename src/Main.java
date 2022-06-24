@@ -48,7 +48,7 @@ public class Main {
         // Проверка на то, что числа входят в установленный диапазон
         // Дальше проверка на то, что оба числа из одной системы
         for (String num: numbers) {
-            if (isArabic(num)) {
+            if (isNumValid(arabicNumbers, num)) {
                 if (count == 0) {
                     sysType = 0;
                     count++;
@@ -57,7 +57,7 @@ public class Main {
                 if (sysType != 0) {
                     return exception(diffSystems);
                 }
-            } else if (isRome(num)) {
+            } else if (isNumValid(romeNumbers, num)) {
                 if (count == 0) {
                     sysType = 1;
                     count++;
@@ -71,8 +71,8 @@ public class Main {
             }
         }
 
-        int num1 = 0;
-        int num2 = 0;
+        int num1;
+        int num2;
 
         // Конвертируем числа
         if (sysType == 0) {
@@ -89,7 +89,7 @@ public class Main {
                 return getOutput(sysType, num1 + num2);
             case "-":
                 String out = getOutput(sysType, num1 - num2);
-                if (out == "null") {
+                if (out.equals("null")) {
                     return exception(negRomeVal);
                 }
                 return out;
@@ -102,14 +102,13 @@ public class Main {
         }
     }
 
-    // Римская ли система счисления?
-    public static boolean isRome(String num) {
-        return Arrays.asList(romeNumbers).contains(num);
-    }
-
-    // Арабская ли система счисления?
-    public static boolean isArabic(String num) {
-        return Arrays.asList(arabicNumbers).contains(num);
+    public static boolean isNumValid(String[] numbers, String num) {
+        for (String n: numbers) {
+            if (n.equals(num)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Конвертируем String -> Int
