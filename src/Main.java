@@ -1,10 +1,19 @@
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
-    public static String[] arabicNumbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-    public static String[] romeNumbers = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+    static String[] arabNumbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+    static String[] romeNumbers = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+    static int[] arab = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    static String[] rome = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+
+    static final String noMathExpr = "throws Exception //т.к. строка не является математической операцией";
+    static final String invalidExpr = "throws Exception //т.к. формат математической операции не " +
+            "удовлетворяет заданию - два операнда и один оператор (+, -, /, *)";
+    static final String diffSystems = "throws Exception //т.к. используются одновременно разные системы счисления";
+    static final String noOperation = "throws Exception //т.к. калькулятор не поддерживает такую операцию";
+    static final String invalidSys = "throws Exception //т.к. введено неподходящее число";
+    static final String negRomeVal = "throws Exception //т.к. римские числа могут быть только положительными";
 
     public static void main(String[] args) {
         // Создаём сканер и вводим данные
@@ -16,14 +25,6 @@ public class Main {
     }
 
     public static String calc(String input) {
-        String noMathExpr = "throws Exception //т.к. строка не является математической операцией";
-        String invalidExpr = "throws Exception //т.к. формат математической операции не " +
-                "удовлетворяет заданию - два операнда и один оператор (+, -, /, *)";
-        String diffSystems = "throws Exception //т.к. используются одновременно разные системы счисления";
-        String noOperation = "throws Exception //т.к. калькулятор не поддерживает такую операцию";
-        String invalidSys = "throws Exception //т.к. введено неподходящее число";
-        String negRomeVal = "throws Exception //т.к. римские числа могут быть только положительными";
-
         // Разделяем строку с математическим выражением
         String[] expression = input.split(" +");
 
@@ -48,7 +49,7 @@ public class Main {
         // Проверка на то, что числа входят в установленный диапазон
         // Дальше проверка на то, что оба числа из одной системы
         for (String num: numbers) {
-            if (isNumValid(arabicNumbers, num)) {
+            if (isNumValid(arabNumbers, num)) {
                 if (count == 0) {
                     sysType = 0;
                     count++;
@@ -79,27 +80,18 @@ public class Main {
             num1 = strToInt(numbers[0]);
             num2 = strToInt(numbers[1]);
         } else {
-            num1 = strToInt(RomeNumber.valueOf(numbers[0]).getArabicNumber());
-            num2 = strToInt(RomeNumber.valueOf(numbers[1]).getArabicNumber());
+            num1 = romeToArab(numbers[0]);
+            num2 = romeToArab(numbers[1]);
         }
 
         // Вычисляем результат выражения
-        switch (operator) {
-            case "+":
-                return getOutput(sysType, num1 + num2);
-            case "-":
-                String out = getOutput(sysType, num1 - num2);
-                if (out.equals("null")) {
-                    return exception(negRomeVal);
-                }
-                return out;
-            case "*":
-                return getOutput(sysType, num1 * num2);
-            case "/":
-                return getOutput(sysType, num1 / num2);
-            default:
-                return exception(noOperation);
-        }
+        return switch (operator) {
+            case "+" -> getOutput(sysType, num1 + num2);
+            case "-" -> getOutput(sysType, num1 - num2);
+            case "*" -> getOutput(sysType, num1 * num2);
+            case "/" -> getOutput(sysType, num1 / num2);
+            default -> exception(noOperation);
+        };
     }
 
     public static boolean isNumValid(String[] numbers, String num) {
@@ -109,6 +101,42 @@ public class Main {
             }
         }
         return false;
+    }
+
+    // Перевод числа из Арабской системы в Римскую
+    public static String arabToRome(String num) {
+        int n = strToInt(num);
+
+        if (n < 1) {
+            return exception(negRomeVal);
+        }
+
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < arab.length; i++) {
+            while (n >= arab[i]){
+                n -= arab[i];
+                res.append(rome[i]);
+            }
+        }
+
+        return res.toString();
+    }
+
+    // Перевод числа из Римской системы в Арабскую
+    public static int romeToArab(String num) {
+        int res = 0;
+        int i = 0;
+
+        while ((num.length() > 0) & (i < rome.length)) {
+            if (num.startsWith(rome[i])) {
+                res += arab[i];
+                num = num.substring(rome[i].length());
+            } else {
+                i++;
+            }
+        }
+
+        return res;
     }
 
     // Конвертируем String -> Int
@@ -126,7 +154,7 @@ public class Main {
         if (sysType == 0) {
             return intToStr(out);
         } else {
-            return String.valueOf(RomeNumber.getRomeNumber(intToStr(out)));
+            return arabToRome(intToStr(out));
         }
     }
     
